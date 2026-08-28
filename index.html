@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中心卫生间配置计算器</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    padding: 24px;
+    color: #333;
+  }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    padding: 28px 32px;
+  }
+  h1 {
+    font-size: 22px;
+    color: #1a4f8a;
+    margin-bottom: 6px;
+    border-bottom: 3px solid #1a4f8a;
+    padding-bottom: 12px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 24px;
+  }
+  .input-section {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .input-group {
+    flex: 1;
+    min-width: 200px;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+  }
+  input[type="number"]:focus { border-color: #1a4f8a; }
+  .btn-row { margin: 20px 0; display: flex; gap: 12px; }
+  button {
+    padding: 11px 24px;
+    font-size: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-calc { background: #1a4f8a; color: #fff; }
+  .btn-calc:hover { background: #163f6e; }
+  .btn-reset { background: #e8e8e8; color: #555; }
+  .btn-reset:hover { background: #dcdcdc; }
+  .result {
+    margin-top: 24px;
+    border-top: 1px dashed #ccc;
+    padding-top: 20px;
+  }
+  .result h2 {
+    font-size: 17px;
+    color: #1a4f8a;
+    margin-bottom: 14px;
+  }
+  .card {
+    background: #f7f9fc;
+    border-left: 4px solid #1a4f8a;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: #1a4f8a;
+  }
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 14px;
+    border-bottom: 1px dotted #e0e0e0;
+  }
+  .card-row:last-child { border-bottom: none; }
+  .card-row .label { color: #666; }
+  .card-row .val { font-weight: 600; color: #222; }
+  .highlight {
+    background: #fff4e0;
+    border-left-color: #e8841a;
+  }
+  .highlight .card-title { color: #c46a00; }
+  .note {
+    font-size: 12px;
+    color: #999;
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+  .warn {
+    background: #fdeaea;
+    border-left-color: #d9534f;
+    color: #a94442;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>中心卫生间配置计算器</h1>
+  <div class="subtitle">依据《中心卫生间、吸烟室与司机休息室配套标准（讨论版）》2.2 中心建议</div>
+
+  <div class="input-section">
+    <div class="input-group">
+      <label for="men">男职工人数</label>
+      <input type="number" id="men" min="0" step="1" placeholder="如 120" value="120">
+    </div>
+    <div class="input-group">
+      <label for="women">女职工人数</label>
+      <input type="number" id="women" min="0" step="1" placeholder="如 80" value="80">
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-calc" onclick="calc()">计算配置</button>
+    <button class="btn-reset" onclick="resetForm()">重置</button>
+  </div>
+
+  <div class="warn" id="warn"></div>
+
+  <div class="result" id="result" style="display:none;">
+    <h2>📋 配置结果</h2>
+
+    <div class="card">
+      <div class="card-title">一、卫生间设置标准</div>
+      <div class="card-row"><span class="label">男卫生间</span><span class="val" id="r-male"></span></div>
+      <div class="card-row"><span class="label">女卫生间</span><span class="val" id="r-female"></span></div>
+      <div class="card-row"><span class="label">位置建议</span><span class="val">距中间工位 ≤50 米</span></div>
+      <div class="card-row"><span class="label">往返时间</span><span class="val">≤60 秒（不含如厕）</span></div>
+    </div>
+
+    <div class="card highlight">
+      <div class="card-title">二、男女蹲位比例配置</div>
+      <div class="card-row"><span class="label">男蹲位数</span><span class="val" id="r-male-squat"></span></div>
+      <div class="card-row"><span class="label">女蹲位数</span><span class="val" id="r-female-squat"></span></div>
+      <div class="card-row"><span class="label">蹲位比例（男:女）</span><span class="val" id="r-squat-ratio"></span></div>
+    </div>
+
+    <div class="card highlight">
+      <div class="card-title">三、男性条形小便槽（尿槽）比例</div>
+      <div class="card-row"><span class="label">男尿槽数</span><span class="val" id="r-urinal"></span></div>
+      <div class="card-row"><span class="label">尿槽 : 男蹲位</span><span class="val" id="r-urinal-ratio"></span></div>
+      <div class="card-row"><span class="label">尿槽占男卫设施比</span><span class="val" id="r-urinal-pct"></span></div>
+    </div>
+
+    <div class="note">
+      计算规则（来自标准文档）：<br>
+      · 男卫生间：≤100 人固定 4 蹲位 + 4 尿槽；>100 人每多 50 人增设 1 蹲位 + 1 尿槽<br>
+      · 女卫生间（≤100人）：每 15 人设 1–2 个蹲位（本工具取推荐中值，系数 1.5；下限 ceil(W/15)，上限 2×ceil(W/15)）<br>
+      · 女卫生间（&gt;100人）：基础蹲位（100人时 7 个）+ 每增加 30 人增设 1 个蹲位<br>
+      · 男女比例校验：装卸车 1:0（至少 1 个女卫生间）；中端 1.38:1（仅供参考）
+    </div>
+  </div>
+</div>
+
+<script>
+function calc() {
+  const men = parseInt(document.getElementById('men').value) || 0;
+  const women = parseInt(document.getElementById('women').value) || 0;
+  const warn = document.getElementById('warn');
+  warn.style.display = 'none';
+
+  if (men < 0 || women < 0) {
+    warn.textContent = '人数不能为负数，请重新输入。';
+    warn.style.display = 'block';
+    return;
+  }
+
+  // ---- 男卫生间 ----
+  // ≤100 人固定 4 蹲位 + 4 尿槽；>100 人每多 50 人 +1 蹲位 +1 尿槽
+  let maleExtra;
+  if (men <= 100) {
+    maleExtra = 0;
+  } else {
+    maleExtra = Math.floor((men - 100) / 50);
+  }
+  const maleSquat = 4 + maleExtra;
+  const maleUrinal = 4 + maleExtra;
+
+  // ---- 女卫生间 ----
+  let femaleSquat, femaleNote;
+  if (women <= 100) {
+    const base = Math.ceil(women / 15);
+    const low = base;
+    const high = base * 2;
+    femaleSquat = Math.round(base * 1.5); // 推荐中值
+    femaleNote = `每15人1–2个，范围 ${low}–${high}，推荐 ${femaleSquat}`;
+  } else {
+    const base = Math.ceil(100 / 15); // = 7
+    const extra = Math.floor((women - 100) / 30);
+    femaleSquat = base + extra;
+    femaleNote = `基础7 + 每增30人1个（增${extra}）= ${femaleSquat}`;
+  }
+
+  // ---- 比例 ----
+  const squatRatio = `${maleSquat} : ${femaleSquat}`;
+  const urinalRatio = `${maleUrinal} : ${maleSquat}`;
+  const urinalPct = ((maleUrinal / (maleSquat + maleUrinal)) * 100).toFixed(1) + '%';
+
+  // ---- 校验 ----
+  let warns = [];
+  if (women > 0 && femaleSquat < 1) warns.push('女职工存在但女卫生间蹲位不足，至少应设 1 个女卫生间。');
+  if (women === 0) warns.push('当前无女职工：按装卸车比例 1:0，至少保留 1 个女卫生间备用。');
+  if (warns.length > 0) {
+    warn.innerHTML = '⚠ ' + warns.join('<br>⚠ ');
+    warn.style.display = 'block';
+  }
+
+  // ---- 输出 ----
+  document.getElementById('r-male').textContent = `${maleSquat} 蹲位 + ${maleUrinal} 尿槽`;
+  document.getElementById('r-female').textContent = `${femaleSquat} 蹲位（${femaleNote}）`;
+  document.getElementById('r-male-squat').textContent = maleSquat + ' 个';
+  document.getElementById('r-female-squat').textContent = femaleSquat + ' 个';
+  document.getElementById('r-squat-ratio').textContent = squatRatio;
+  document.getElementById('r-urinal').textContent = maleUrinal + ' 个';
+  document.getElementById('r-urinal-ratio').textContent = urinalRatio;
+  document.getElementById('r-urinal-pct').textContent = urinalPct;
+
+  document.getElementById('result').style.display = 'block';
+}
+
+function resetForm() {
+  document.getElementById('men').value = '';
+  document.getElementById('women').value = '';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('warn').style.display = 'none';
+}
+</script>
+</body>
+</html>
