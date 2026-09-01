@@ -9,7 +9,6 @@
 body{font-family:"Microsoft YaHei",sans-serif;background:#f0f4f8;color:#1a2a3a;min-height:100vh;padding:16px}
 h1{text-align:center;font-size:1.3rem;color:#2c5ea8;margin-bottom:14px}
 
-/* ---- 输入区 ---- */
 .input-card{background:#fff;border-radius:12px;padding:18px 20px;max-width:680px;margin:0 auto 14px;
   box-shadow:0 2px 8px rgba(44,94,168,.1)}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -24,7 +23,6 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
 
 .notes{font-size:.75rem;color:#7a9cc8;background:#eaf2ff;padding:8px 12px;border-radius:8px;margin-top:10px;line-height:2}
 
-/* ---- 按钮区 ---- */
 .btn-row{display:flex;gap:10px;max-width:680px;margin:0 auto 14px;justify-content:center}
 .btn{padding:10px 24px;border:none;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s}
 .btn-primary{background:#2c5ea8;color:#fff}
@@ -32,22 +30,18 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
 .btn-secondary{background:#fff;color:#2c5ea8;border:1.5px solid #2c5ea8}
 .btn-secondary.active{background:#e8f0fc}
 
-/* ---- 结果区 ---- */
 #result_area{max-width:680px;margin:0 auto}
 .result-placeholder{text-align:center;color:#94b4d4;font-size:.9rem;padding:40px 0}
 
-/* 结果头部 */
 .result-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
 .result-tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:700}
 .tag-module{background:#dbeeff;color:#1a5faa}
 .tag-total{background:#ffe0d0;color:#a05020}
 
-/* 通用卡片 */
 .card{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:12px;
   box-shadow:0 2px 8px rgba(44,94,168,.08)}
 .card-title{font-size:.88rem;font-weight:700;color:#2c5ea8;margin-bottom:10px}
 
-/* 统计卡片 */
 .stat-row{display:flex;gap:12px;flex-wrap:wrap}
 .stat-card{background:#f4f8ff;border-radius:10px;padding:10px 14px;flex:1;min-width:130px}
 .stat-label{font-size:.72rem;color:#7a9cc8;margin-bottom:3px}
@@ -55,17 +49,14 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
 .stat-val span{font-size:.8rem;font-weight:400;color:#5a8acc}
 .stat-unit{font-size:.7rem;color:#7a9cc8;margin-top:2px}
 
-/* 蹲位格子 */
 .stall-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:8px}
 .stall-chip{background:#f0f6ff;border-radius:8px;padding:8px 10px;font-size:.75rem;line-height:1.6}
 .stall-chip .label{color:#5a7aa8;display:block}
 .stall-chip .val{font-size:1.1rem;font-weight:700;color:#1a3f7a}
 .stall-chip .urinal{color:#7a9cc8;font-size:.7rem}
 
-/* 位置建议 */
 .position-box{font-size:.78rem;color:#3a5a8a;line-height:2;background:#f0f6ff;padding:10px 14px;border-radius:8px}
 
-/* 配置建议 */
 .rec-gender{margin-bottom:12px}
 .rec-gender-title{font-size:.8rem;font-weight:700;color:#1a3f7a;margin-bottom:6px}
 .rec-item{padding:8px 12px;border-radius:8px;font-size:.8rem;margin-bottom:6px;line-height:1.8}
@@ -77,7 +68,6 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
 
 .tip-box{background:#f0f4ff;border-radius:8px;padding:10px 14px;font-size:.75rem;color:#5a7aa8;line-height:1.8;margin-top:4px}
 
-/* 说明 */
 .hint{font-size:.7rem;color:#94b4d4;line-height:2;max-width:680px;margin:10px auto;padding:0 16px}
 .hint b{color:#5a8acc}
 </style>
@@ -110,10 +100,10 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
   </div>
   <div class="notes">
     💡 计算前提：各区域男女比例相近。<br>
-    📐 <b>规则依据</b>：卸货（中端）占67%、装车（前端）占20%、出港（后端）占13%。<br>
+    📐 <b>合并规则</b>（按性别分别判断）: 若前端或后端某性别蹲位 &lt; 单间最大蹲位数，则取蹲位最少者并入中端，原模块取消；其余模块独立建设。<br>
     👨 男：≤100人固定4蹲+4槽；>100人每多50人+1蹲+1槽。<br>
     👩 女：≤100人按比例公式；>100人基础7蹲+每多30人+1蹲。<br>
-    ⏱️ 如厕时间：男性×1，女性×1.5~2；往返距离≤60s；距中间工位≤50m。
+    ⏱️ 如厕时间：男×1，女×1.5~2倍；往返≤60s；距中间工位≤50m。
   </div>
 </div>
 
@@ -129,14 +119,13 @@ input::-webkit-inner-spin-button{-webkit-appearance:none}
 <div class="hint">
   <b>逻辑1</b>：分进港/出港六个模块（前中后端）计算，蹲位差值≤5%取中位数，>5%需确认。<br>
   <b>逻辑2</b>：直接输出全中心总蹲位，不拆分区域。<br>
-  <b>合并规则</b>：某区蹲位数&lt;单间最大蹲位，该区并入中端合并建设（男女分区独立判断）。
+  <b>合并规则</b>（按源文档）：某性别前端或后端蹲位 &lt; 单间最大值时，<b>取蹲位最少</b>的那一个并入中端，其余独立。
 </div>
 
 <script>
 // ================================================================
-// 核心计算逻辑
+// 基础公式
 // ================================================================
-
 function calMale(n) {
   return n <= 100 ? 4 : 4 + Math.ceil((n - 100) / 50);
 }
@@ -153,8 +142,7 @@ function numToilets(stalls, maxS) {
   return Math.ceil(stalls / maxS);
 }
 
-// 合并结果项（共享逻辑）
-function makeResult(name, m, mr, f, fr, fl, fh, maxS, merged) {
+function makeModule(name, m, mr, f, fr, fl, fh, maxS, isMerged, mergedFrom) {
   return {
     name: name,
     m: m, mr: mr, urinal: mr,
@@ -162,15 +150,11 @@ function makeResult(name, m, mr, f, fr, fl, fh, maxS, merged) {
     maxS: maxS,
     maleRooms: numToilets(mr, maxS),
     femaleRooms: numToilets(fr, maxS),
-    isMerged: merged,
-    mergedFrom: [],
-    people: m + f,
-    stalls: mr + fr,
-    rooms: Math.max(numToilets(mr, maxS), numToilets(fr, maxS)),
+    isMerged: isMerged,
+    mergedFrom: mergedFrom,
   };
 }
 
-// 三段拆分
 function splitInto3(prefix, totalM, totalF, maxS) {
   var ratios = [0.20, 0.67, 0.13];
   var zones = ['前端', '中端', '后端'];
@@ -178,165 +162,122 @@ function splitInto3(prefix, totalM, totalF, maxS) {
     var m = Math.round(totalM * ratio);
     var f = Math.round(totalF * ratio);
     var mr = calMale(m);
-    var fr = calFemale(f)[0];
-    var r = makeResult(prefix + '-' + zones[i], m, mr, f, fr,
-      calFemale(f)[1], calFemale(f)[2], maxS, false);
-    r.mergedFrom = [zones[i]];
-    return r;
+    var frArr = calFemale(f);
+    return makeModule(prefix + '-' + zones[i], m, mr, f, frArr[0], frArr[1], frArr[2], maxS, false, [zones[i]]);
   });
 }
 
-// 男女分区独立合并：输入三模块，输出 {male: [...], female: [...]}
-// 核心规则：男蹲位<maxS的区并中端，女蹲位<maxS的区并中端，各自独立
+// ================================================================
+// 合并核心：按源文档规则 —— 取蹲位最少者并入中端
+// 返回 {male: [...], female: [...]}
+// ================================================================
 function mergeByGender(modules, maxS) {
   var front = modules[0];
   var mid   = modules[1];
   var back  = modules[2];
 
-  var maleResult = [];
-  var femaleResult = [];
-
-  // ---- 男性合并 ----
-  var mFrontSmall = front.mr < maxS;
-  var mBackSmall = back.mr < maxS;
-
-  if (mFrontSmall) {
-    var mNew = front.m + mid.m;
-    var mNewR = calMale(mNew);
-    var item = makeResult('中端(含前端)', mNew, mNewR,
-      mid.f, mid.fr, mid.fl, mid.fh, maxS, true);
-    item.mergedFrom = ['中端', '前端'];
-    item.people = mNew;
-    item.stalls = mNewR;
-    item.rooms = numToilets(mNewR, maxS);
-    maleResult.push(item);
-  } else {
-    var midClone = makeResult(mid.name, mid.m, mid.mr, mid.f, mid.fr, mid.fl, mid.fh, maxS, false);
-    midClone.mergedFrom = ['中端'];
-    var frontClone = makeResult(front.name, front.m, front.mr, front.f, front.fr, front.fl, front.fh, maxS, false);
-    frontClone.mergedFrom = ['前端'];
-    maleResult.push(midClone, frontClone);
-  }
-
-  if (mBackSmall) {
-    var lastM = maleResult[maleResult.length - 1];
-    if (lastM.isMerged) {
-      // 追加到已有合并项
-      lastM.m += back.m;
-      lastM.mr = calMale(lastM.m);
-      lastM.urinal = lastM.mr;
-      lastM.people = lastM.m;
-      lastM.stalls = lastM.mr;
-      lastM.rooms = numToilets(lastM.mr, maxS);
-      lastM.name = lastM.name + '+后端';
-      if (lastM.mergedFrom.indexOf('后端') < 0) lastM.mergedFrom.push('后端');
-    } else {
-      // 替换最后的独立中端
-      var upd = makeResult(mid.name + '(含后端)',
-        lastM.m + back.m, calMale(lastM.m + back.m),
-        lastM.f, lastM.fr, lastM.fl, lastM.fh, maxS, true);
-      upd.mergedFrom = ['中端', '后端'];
-      upd.people = upd.m;
-      upd.stalls = upd.mr;
-      upd.rooms = numToilets(upd.mr, maxS);
-      maleResult[maleResult.length - 1] = upd;
+  // 选取要并入中端的模块：'front' | 'back' | null
+  function pickTarget(mod1, mod2, key) {
+    var s1 = mod1[key] < maxS;
+    var s2 = mod2[key] < maxS;
+    if (s1 && s2) {
+      // 都触发，取蹲位少者（平局取前端）
+      return mod1[key] <= mod2[key] ? 'front' : 'back';
     }
-  } else {
-    var backClone = makeResult(back.name, back.m, back.mr, back.f, back.fr, back.fl, back.fh, maxS, false);
-    backClone.mergedFrom = ['后端'];
-    maleResult.push(backClone);
+    if (s1) return 'front';
+    if (s2) return 'back';
+    return null;  // 都不触发，不合并
   }
 
-  // ---- 女性合并 ----
-  var fFrontSmall = front.fr < maxS;
-  var fBackSmall = back.fr < maxS;
+  var mTarget = pickTarget(front, back, 'mr');
+  var fTarget = pickTarget(front, back, 'fr');
 
-  if (fFrontSmall) {
-    var fNew = front.f + mid.f;
-    var fNewR = calFemale(fNew)[0];
-    var item = makeResult('中端(含前端)', mid.m, mid.mr,
-      fNew, fNewR, calFemale(fNew)[1], calFemale(fNew)[2], maxS, true);
-    item.mergedFrom = ['中端', '前端'];
-    item.people = fNew;
-    item.stalls = fNewR;
-    item.rooms = numToilets(fNewR, maxS);
-    femaleResult.push(item);
-  } else {
-    var midFClone = makeResult(mid.name, mid.m, mid.mr, mid.f, mid.fr, mid.fl, mid.fh, maxS, false);
-    midFClone.mergedFrom = ['中端'];
-    var frontFClone = makeResult(front.name, front.m, front.mr, front.f, front.fr, front.fl, front.fh, maxS, false);
-    frontFClone.mergedFrom = ['前端'];
-    femaleResult.push(midFClone, frontFClone);
-  }
-
-  if (fBackSmall) {
-    var lastF = femaleResult[femaleResult.length - 1];
-    if (lastF.isMerged) {
-      lastF.f += back.f;
-      var fNewR2 = calFemale(lastF.f)[0];
-      lastF.fr = fNewR2;
-      lastF.fl = calFemale(lastF.f)[1];
-      lastF.fh = calFemale(lastF.f)[2];
-      lastF.people = lastF.f;
-      lastF.stalls = fNewR2;
-      lastF.rooms = numToilets(fNewR2, maxS);
-      lastF.name = lastF.name + '+后端';
-      if (lastF.mergedFrom.indexOf('后端') < 0) lastF.mergedFrom.push('后端');
-    } else {
-      var updF = makeResult(mid.name + '(含后端)',
-        lastF.m, lastF.mr,
-        lastF.f + back.f, calFemale(lastF.f + back.f)[0],
-        calFemale(lastF.f + back.f)[1], calFemale(lastF.f + back.f)[2], maxS, true);
-      updF.mergedFrom = ['中端', '后端'];
-      updF.people = updF.f;
-      updF.stalls = updF.fr;
-      updF.rooms = numToilets(updF.fr, maxS);
-      femaleResult[femaleResult.length - 1] = updF;
+  // 构建单个性别的结果列表
+  function build(target) {
+    if (target === null) {
+      // 都不 < maxS，三个都独立
+      return [
+        makeModule(mid.name, mid.m, mid.mr, mid.f, mid.fr, mid.fl, mid.fh, maxS, false, ['中端']),
+        makeModule(front.name, front.m, front.mr, front.f, front.fr, front.fl, front.fh, maxS, false, ['前端']),
+        makeModule(back.name, back.m, back.mr, back.f, back.fr, back.fl, back.fh, maxS, false, ['后端']),
+      ];
     }
-  } else {
-    var backFClone = makeResult(back.name, back.m, back.mr, back.f, back.fr, back.fl, back.fh, maxS, false);
-    backFClone.mergedFrom = ['后端'];
-    femaleResult.push(backFClone);
+
+    var small, big, smallName, bigName;
+    if (target === 'front') {
+      small = front; big = back;
+      smallName = '前端'; bigName = '后端';
+    } else {
+      small = back; big = front;
+      smallName = '后端'; bigName = '前端';
+    }
+
+    // 合并：中端人数 + small人数，重算蹲位
+    var newM = mid.m + small.m;
+    var newF = mid.f + small.f;
+    var newMR = calMale(newM);
+    var frArr = calFemale(newF);
+
+    var merged = makeModule(
+      '中端(含' + smallName + ')',
+      newM, newMR,
+      newF, frArr[0], frArr[1], frArr[2],
+      maxS, true, ['中端', smallName]
+    );
+
+    var indep = makeModule(
+      big.name, big.m, big.mr, big.f, big.fr, big.fl, big.fh, maxS, false, [bigName]
+    );
+
+    // 排序：合并项在前（或按物理顺序：中端先、独立后）
+    // 当前顺序：front被合则[merged, indep=back]；back被合则[indep=front, merged]
+    // 调整为：合并项始终在前展示更直观
+    if (target === 'front') return [merged, indep];
+    return [indep, merged];
   }
 
-  return { male: maleResult, female: femaleResult };
+  return {
+    male: build(mTarget),
+    female: build(fTarget),
+  };
 }
 
+// ================================================================
 // 主求解
+// ================================================================
 function solve(jm, jf, cm, cf, maxS, useLogic1) {
-  var r = {
-    inputs: { jinM: jm, jinF: jf, chuM: cm, chuF: cf },
-    maxS: maxS,
-    useLogic1: useLogic1,
-  };
-
   var totalM = jm + cm;
   var totalF = jf + cf;
   var mr = calMale(totalM);
   var frArr = calFemale(totalF);
 
-  r.total = {
-    maleSquat: mr,
-    maleUrinal: mr,
-    femaleSquat: frArr[0],
-    femaleRange: [frArr[1], frArr[2]],
-    femaleFactor: 1.75,
-    roundTripSec: 60,
-    positionNote: '距中间工位50m以内，楼梯进出口附近',
+  var r = {
+    inputs: { jinM: jm, jinF: jf, chuM: cm, chuF: cf },
+    maxS: maxS,
+    useLogic1: useLogic1,
+    total: {
+      maleSquat: mr,
+      maleUrinal: mr,
+      femaleSquat: frArr[0],
+      femaleRange: [frArr[1], frArr[2]],
+      femaleFactor: 1.75,
+      roundTripSec: 60,
+      positionNote: '距中间工位50m以内，楼梯进出口附近',
+    },
   };
 
   if (!useLogic1) {
     r.modules = [];
-    r.merged = { male: [], female: [] };
     r.进港_merged = { male: [], female: [] };
     r.出港_merged = { male: [], female: [] };
+    r.merged = { male: [], female: [] };
     return r;
   }
 
   var jModules = splitInto3('进港', jm, jf, maxS);
   var cModules = splitInto3('出港', cm, cf, maxS);
-
   r.modules = jModules.concat(cModules);
+
   r.进港_merged = mergeByGender(jModules, maxS);
   r.出港_merged = mergeByGender(cModules, maxS);
   r.merged = {
@@ -359,22 +300,22 @@ function render(r) {
 
   var html = '';
 
-  // 头部
   html += '<div class="result-header">';
   html += '<span class="result-tag ' + (r.useLogic1 ? 'tag-module' : 'tag-total') + '">';
   html += (r.useLogic1 ? '📐 逻辑1：分模块+合并' : '📊 逻辑2：仅总蹲位');
   html += '</span>';
   html += '<span style="font-size:.75rem;color:#8aaac8">';
   html += '参数：进港男' + i.jinM + ' 进港女' + i.jinF + ' 出港男' + i.chuM + ' 出港女' + i.chuF;
+  html += ' | 单间max=' + ms;
   html += '</span></div>';
 
-  // 统计卡片
+  // 总览
   html += '<div class="card" style="margin-bottom:12px">';
   html += '<div class="stat-row">';
-  html += '<div class="stat-card"><div class="stat-label">👨 男蹲位</div>';
+  html += '<div class="stat-card"><div class="stat-label">👨 男总蹲位</div>';
   html += '<div class="stat-val">' + r.total.maleSquat + '<span>蹲</span></div>';
   html += '<div class="stat-unit">+ ' + r.total.maleUrinal + ' 尿槽（1:1配置）</div></div>';
-  html += '<div class="stat-card"><div class="stat-label">👩 女蹲位</div>';
+  html += '<div class="stat-card"><div class="stat-label">👩 女总蹲位</div>';
   html += '<div class="stat-val">' + r.total.femaleSquat + '<span>蹲</span></div>';
   html += '<div class="stat-unit">推荐范围 ' + fl + '-' + fh + ' 蹲</div></div>';
   html += '</div>';
@@ -394,47 +335,42 @@ function render(r) {
   html += '• 综合吸烟室：按卫生间数量（约' + maxToilets + '间）的 <strong>1/3</strong> 酌情设置于卫生间附近';
   html += '</div></div>';
 
-  // 配置建议
+  // 配置建议（逻辑1）
   if (r.useLogic1) {
     var libConfig = [
       { key: '进港_merged', label: '🚢 进港库' },
       { key: '出港_merged', label: '🚚 出港库' },
     ];
-    var recHtml = '<div class="card"><div class="card-title">📋 卫生间配置建议</div>';
+
+    var recHtml = '<div class="card"><div class="card-title">📋 卫生间配置建议（按源文档合并规则）</div>';
 
     for (var li = 0; li < libConfig.length; li++) {
       var cfg = libConfig[li];
       var byG = r[cfg.key];
-      if (!byG) continue;
+      if (!byG || (byG.male.length === 0 && byG.female.length === 0)) continue;
 
       recHtml += '<div class="rec-gender"><div class="rec-gender-title">' + cfg.label + '</div>';
 
       // 男性
-      var maleItems = byG.male || [];
-      if (maleItems.length > 0) {
-        recHtml += '<div class="rec-gender"><div class="rec-gender-title" style="font-size:.76rem;color:#5a8acc">👨 男卫生间</div>';
-        for (var mi = 0; mi < maleItems.length; mi++) {
-          recHtml += renderItem(maleItems[mi], 'male', ms);
+      if (byG.male && byG.male.length > 0) {
+        recHtml += '<div class="rec-gender-title" style="font-size:.76rem;color:#5a8acc">👨 男卫生间</div>';
+        for (var mi = 0; mi < byG.male.length; mi++) {
+          recHtml += renderItem(byG.male[mi], 'male', ms);
         }
-        recHtml += '</div>';
       }
-
       // 女性
-      var femaleItems = byG.female || [];
-      if (femaleItems.length > 0) {
-        recHtml += '<div class="rec-gender"><div class="rec-gender-title" style="font-size:.76rem;color:#5a8acc">👩 女卫生间</div>';
-        for (var fi = 0; fi < femaleItems.length; fi++) {
-          recHtml += renderItem(femaleItems[fi], 'female', ms);
+      if (byG.female && byG.female.length > 0) {
+        recHtml += '<div class="rec-gender-title" style="font-size:.76rem;color:#5a8acc">👩 女卫生间</div>';
+        for (var fi = 0; fi < byG.female.length; fi++) {
+          recHtml += renderItem(byG.female[fi], 'female', ms);
         }
-        recHtml += '</div>';
       }
 
       recHtml += '</div>';
     }
 
     recHtml += '<div class="tip-box">';
-    recHtml += '💡 合并建设时男女分区各自独立，仅蹲位数&lt;单间最大值的区域并入中端；';
-    recHtml += '如总蹲位超过单间最大值会自动拆分多间（每间≤' + ms + '蹲）。';
+    recHtml += '💡 合并规则（按源文档）：若前端或后端某性别蹲位 &lt; 单间最大值，<b>取蹲位最少</b>的那一个并入中端，原模块取消；其余模块独立建设。';
     recHtml += '</div></div>';
     html += recHtml;
   } else {
@@ -448,46 +384,58 @@ function render(r) {
 }
 
 // 渲染单个配置项
-function renderItem(item, gender, ms) {
-  var merged = item.isMerged;
-  var cls = merged ? 'rec-item 合并' : 'rec-item 独立';
-  var badge = merged
+function renderItem(item, gender, maxS) {
+  var isMerged = item.isMerged;
+  var cls = isMerged ? 'rec-item 合并' : 'rec-item 独立';
+  var badge = isMerged
     ? '<span class="badge badge-merge">合并</span>'
     : '<span class="badge badge-alone">独立</span>';
 
-  // 蹲位/间数
-  var base = Math.floor(item.stalls / item.rooms);
-  var rem = item.stalls % item.rooms;
-  var perRoom = rem > 0 ? (base + 1) + '+1' : String(base);
-  var roomStr = item.rooms === 1 ? '1间' : item.rooms + '间';
+  var stalls, people, rooms, rangeStr, urinal, genderLabel;
+  if (gender === 'male') {
+    stalls = item.mr;
+    people = item.m;
+    rooms  = item.maleRooms;
+    urinal = item.urinal;
+    genderLabel = '男';
+  } else {
+    stalls = item.fr;
+    people = item.f;
+    rooms  = item.femaleRooms;
+    rangeStr = item.fl + '-' + item.fh;
+    genderLabel = '女';
+  }
+
+  var perRoom = rooms === 1 ? stalls : (Math.floor(stalls / rooms) + '+1');
+  var roomStr = rooms + '间';
 
   var html = '<div class="' + cls + '">';
-  if (merged) {
-    var zones = item.mergedFrom;
-    var allThree = zones.length === 3;
-    var zonesStr = allThree ? '全区域' : zones.join('+');
-    html += badge + ' 建议' + zonesStr + '合并建设（' + item.people + '人），' + roomStr + '，每间约' + perRoom + '蹲位<br>';
-    html += '<span style="color:#7a9cc8;font-size:.72rem">蹲位' + item.stalls + ' | ';
-    if (gender === 'male') {
-      html += '+' + item.urinal + '尿槽（同蹲位配置）</span>';
-    } else {
-      html += '范围' + item.fl + '-' + item.fh + '</span>';
-    }
+  var title;
+  if (isMerged) {
+    var zones = item.mergedFrom.join('+');
+    title = badge + ' 建议' + zones + '合并建设（' + people + '人），' + roomStr;
+    if (rooms > 1) title += '，每间约' + perRoom + '蹲位';
+    title += '<br>';
   } else {
-    html += badge + ' ' + item.name + '独立建设（' + item.people + '人），' + roomStr + '，每间约' + perRoom + '蹲位<br>';
-    html += '<span style="color:#7a9cc8;font-size:.72rem">蹲位' + item.stalls + ' | ';
-    if (gender === 'male') {
-      html += '+' + item.urinal + '尿槽</span>';
-    } else {
-      html += '范围' + item.fl + '-' + item.fh + '</span>';
-    }
+    title = badge + ' ' + item.name + '独立建设（' + people + '人），' + roomStr;
+    if (rooms > 1) title += '，每间约' + perRoom + '蹲位';
+    title += '<br>';
   }
+  html += title;
+
+  html += '<span style="color:#7a9cc8;font-size:.72rem">蹲位' + stalls;
+  if (gender === 'male') {
+    html += ' | +' + urinal + '尿槽（1:1配置）</span>';
+  } else {
+    html += ' | 范围' + rangeStr + '</span>';
+  }
+
   html += '</div>';
   return html;
 }
 
 // ================================================================
-// 按钮
+// 按钮入口
 // ================================================================
 function calc(mode) {
   var jm = parseInt(document.getElementById('jin_m').value) || 0;
