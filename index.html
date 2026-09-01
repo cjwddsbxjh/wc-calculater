@@ -3,260 +3,379 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>中心卫生间配置计算器</title>
+<title>中心卫生间配置计算器 v2</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-    background: #f0f2f5;
-    padding: 24px;
-    color: #333;
-  }
-  .container {
-    max-width: 760px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    padding: 28px 32px;
-  }
-  h1 {
-    font-size: 22px;
-    color: #1a4f8a;
-    margin-bottom: 6px;
-    border-bottom: 3px solid #1a4f8a;
-    padding-bottom: 12px;
-  }
-  .subtitle {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 24px;
-  }
-  .input-section {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
-  }
-  .input-group {
-    flex: 1;
-    min-width: 200px;
-  }
-  label {
-    display: block;
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: #444;
-  }
-  input[type="number"] {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    outline: none;
-  }
-  input[type="number"]:focus { border-color: #1a4f8a; }
-  .btn-row { margin: 20px 0; display: flex; gap: 12px; }
-  button {
-    padding: 11px 24px;
-    font-size: 15px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .btn-calc { background: #1a4f8a; color: #fff; }
-  .btn-calc:hover { background: #163f6e; }
-  .btn-reset { background: #e8e8e8; color: #555; }
-  .btn-reset:hover { background: #dcdcdc; }
-  .result {
-    margin-top: 24px;
-    border-top: 1px dashed #ccc;
-    padding-top: 20px;
-  }
-  .result h2 {
-    font-size: 17px;
-    color: #1a4f8a;
-    margin-bottom: 14px;
-  }
-  .card {
-    background: #f7f9fc;
-    border-left: 4px solid #1a4f8a;
-    border-radius: 6px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-  }
-  .card-title {
-    font-weight: 700;
-    font-size: 15px;
-    margin-bottom: 8px;
-    color: #1a4f8a;
-  }
-  .card-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    font-size: 14px;
-    border-bottom: 1px dotted #e0e0e0;
-  }
-  .card-row:last-child { border-bottom: none; }
-  .card-row .label { color: #666; }
-  .card-row .val { font-weight: 600; color: #222; }
-  .highlight {
-    background: #fff4e0;
-    border-left-color: #e8841a;
-  }
-  .highlight .card-title { color: #c46a00; }
-  .note {
-    font-size: 12px;
-    color: #999;
-    margin-top: 16px;
-    line-height: 1.6;
-  }
-  .warn {
-    background: #fdeaea;
-    border-left-color: #d9534f;
-    color: #a94442;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    margin-bottom: 14px;
-    display: none;
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f0f4f8;color:#1a2332;min-height:100vh;padding:24px 16px}
+.container{max-width:860px;margin:0 auto}
+h1{text-align:center;font-size:1.5rem;color:#1a3a5c;margin-bottom:6px}
+.subtitle{text-align:center;color:#5a7a9a;font-size:.85rem;margin-bottom:24px;line-height:1.6}
+
+/* 卡片 */
+.card{background:#fff;border-radius:12px;padding:22px 24px;margin-bottom:16px;
+      box-shadow:0 2px 12px rgba(26,58,92,.08)}
+.card-title{font-size:.95rem;font-weight:700;color:#1a3a5c;margin-bottom:16px;
+            padding-bottom:10px;border-bottom:2px solid #e8f0f8}
+
+/* 输入行 */
+.input-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.input-grid{grid-template-columns:1fr}}
+.input-group{display:flex;flex-direction:column;gap:5px}
+.input-group label{font-size:.8rem;color:#4a6a8a;font-weight:600}
+.input-group input{width:100%;padding:9px 12px;border:1.5px solid #c2d4e4;border-radius:8px;
+                  font-size:.9rem;transition:border .2s}
+.input-group input:focus{outline:none;border-color:#3a7abf;box-shadow:0 0 0 3px rgba(58,122,191,.12)}
+.input-hint{font-size:.72rem;color:#8aaac8}
+
+/* 按钮行 */
+.btn-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{padding:10px 22px;border:none;border-radius:8px;font-size:.88rem;font-weight:600;
+     cursor:pointer;transition:all .2s;flex:1;min-width:140px}
+.btn-primary{background:#1a5fa8;color:#fff}
+.btn-primary:hover{background:#1550a0;transform:translateY(-1px)}
+.btn-secondary{background:#e8f0f8;color:#1a5fa8;border:1.5px solid #b8d0e8}
+.btn-secondary:hover{background:#d8ecff}
+.btn-outline{background:#fff;color:#4a6a8a;border:1.5px solid #c2d4e4}
+.btn-outline:hover{background:#f0f8ff}
+
+/* 结果区 */
+.result-placeholder{text-align:center;color:#a0b8d0;padding:40px 0;font-size:.9rem}
+.result-placeholder.hidden{display:none}
+
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.result-tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
+.tag-total{background:#e3f0ff;color:#1a5fa8}
+.tag-module{background:#e8f8f0;color:#1a7a3a}
+
+/* 统计数字 */
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.stat-card{background:#f6fafd;border-radius:10px;padding:14px 16px;text-align:center}
+.stat-label{font-size:.75rem;color:#6a8aaa;margin-bottom:4px;font-weight:600}
+.stat-val{font-size:2rem;font-weight:800;line-height:1;color:#1a3a5c}
+.stat-val span{font-size:.85rem;font-weight:400;color:#6a8aaa;margin-left:3px}
+.stat-unit{font-size:.7rem;color:#8aaac8;margin-top:2px}
+
+/* 蹲位明细 */
+.stall-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.stall-chip{display:flex;align-items:center;gap:6px;background:#f8fbfe;
+            border:1px solid #dce8f4;border-radius:8px;padding:8px 12px;font-size:.82rem}
+.stall-chip .label{color:#6a8aaa;flex:1}
+.stall-chip .val{font-weight:700;color:#1a3a5c}
+.stall-chip .urinal{color:#3a9a5a;font-size:.78rem}
+
+/* 分模块表格 */
+.module-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:10px}
+.module-table th{background:#e8f2fc;color:#1a5fa8;padding:8px 10px;text-align:center;font-weight:700}
+.module-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #eef4fa}
+.module-table tr:last-child td{border-bottom:none}
+.module-table .zone-name{font-weight:700;color:#1a3a5c;text-align:left}
+.module-table .merged{background:#f0faf4;color:#1a7a3a;font-weight:600}
+.module-table .m-num,.module-table .f-num{color:#4a6a8a}
+.module-table .m-stall{color:#1a5fa8;font-weight:700}
+.module-table .f-stall{color:#1a7a3a;font-weight:700}
+.module-table .f-range{color:#8aaac8;font-size:.72rem}
+
+/* 位置建议 */
+.position-box{background:#fffbec;border:1px solid #f0d880;border-radius:8px;
+             padding:12px 16px;font-size:.8rem;color:#7a6010;line-height:1.8}
+.position-box strong{color:#b08000}
+
+/* 其他说明 */
+.notes{font-size:.78rem;color:#6a8aaa;margin-top:16px;line-height:1.8;
+       padding:12px 16px;background:#f6fafd;border-radius:8px}
+
+/* 按钮激活态 */
+.btn.active{box-shadow:0 0 0 3px rgba(26,95,168,.2)}
+
+/* 最大蹲位输入 */
+.max-s-row{display:flex;align-items:center;gap:12px;margin-top:12px;padding:10px 14px;
+           background:#f6fafd;border-radius:8px;border:1px solid #dce8f4}
+.max-s-row label{font-size:.82rem;color:#4a6a8a;font-weight:600}
+.max-s-row input{width:80px;padding:6px 10px;border:1.5px solid #c2d4e4;border-radius:6px;
+                 font-size:.85rem;text-align:center}
+.max-s-row .hint{font-size:.75rem;color:#8aaac8}
+
+/* 5%说明 */
+.pct-note{font-size:.75rem;color:#8aaac8;margin-top:4px}
+
+/* 误差提示 */
+.deviation-note{font-size:.75rem;color:#8aaac8;margin-top:8px;
+               padding:8px 12px;background:#fffbec;border-radius:6px;border:1px solid #f0d880}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>中心卫生间配置计算器</h1>
-  <div class="subtitle">依据《中心卫生间、吸烟室与司机休息室配套标准（讨论版）》2.2 中心建议</div>
 
-  <div class="input-section">
+<h1>🏢 中心卫生间配置计算器</h1>
+<p class="subtitle">
+  基于《中心卫生间、吸烟室与司机休息室配套标准》v2026-09-01<br>
+  6模块（前/中/后端 × 进港/出港）× 逻辑1/逻辑2 双模式
+</p>
+
+<!-- 输入区 -->
+<div class="card">
+  <div class="card-title">📥 输入参数</div>
+  <div class="input-grid">
     <div class="input-group">
-      <label for="men">男职工人数</label>
-      <input type="number" id="men" min="0" step="1" placeholder="如 120" value="120">
+      <label>进港最大出勤班次内人数（男）</label>
+      <input type="number" id="jin_m" value="50" min="0" placeholder="例：50">
     </div>
     <div class="input-group">
-      <label for="women">女职工人数</label>
-      <input type="number" id="women" min="0" step="1" placeholder="如 80" value="80">
+      <label>进港最大出勤班次内人数（女）</label>
+      <input type="number" id="jin_f" value="80" min="0" placeholder="例：80">
+    </div>
+    <div class="input-group">
+      <label>出港最大出勤班次内人数（男）</label>
+      <input type="number" id="chu_m" value="50" min="0" placeholder="例：50">
+    </div>
+    <div class="input-group">
+      <label>出港最大出勤班次内人数（女）</label>
+      <input type="number" id="chu_f" value="80" min="0" placeholder="例：80">
     </div>
   </div>
-
-  <div class="btn-row">
-    <button class="btn-calc" onclick="calc()">计算配置</button>
-    <button class="btn-reset" onclick="resetForm()">重置</button>
-  </div>
-
-  <div class="warn" id="warn"></div>
-
-  <div class="result" id="result" style="display:none;">
-    <h2>📋 配置结果</h2>
-
-    <div class="card">
-      <div class="card-title">一、卫生间设置标准</div>
-      <div class="card-row"><span class="label">男卫生间</span><span class="val" id="r-male"></span></div>
-      <div class="card-row"><span class="label">女卫生间</span><span class="val" id="r-female"></span></div>
-      <div class="card-row"><span class="label">位置建议</span><span class="val">距中间工位 ≤50 米</span></div>
-      <div class="card-row"><span class="label">往返时间</span><span class="val">≤60 秒（不含如厕）</span></div>
-    </div>
-
-    <div class="card highlight">
-      <div class="card-title">二、男女蹲位比例配置</div>
-      <div class="card-row"><span class="label">男蹲位数</span><span class="val" id="r-male-squat"></span></div>
-      <div class="card-row"><span class="label">女蹲位数</span><span class="val" id="r-female-squat"></span></div>
-      <div class="card-row"><span class="label">蹲位比例（男:女）</span><span class="val" id="r-squat-ratio"></span></div>
-    </div>
-
-    <div class="card highlight">
-      <div class="card-title">三、男性条形小便槽（尿槽）比例</div>
-      <div class="card-row"><span class="label">男尿槽数</span><span class="val" id="r-urinal"></span></div>
-      <div class="card-row"><span class="label">尿槽 : 男蹲位</span><span class="val" id="r-urinal-ratio"></span></div>
-      <div class="card-row"><span class="label">尿槽占男卫设施比</span><span class="val" id="r-urinal-pct"></span></div>
-    </div>
-
-    <div class="note">
-      计算规则（来自标准文档）：<br>
-      · 男卫生间：≤100 人固定 4 蹲位 + 4 尿槽；>100 人每多 50 人增设 1 蹲位 + 1 尿槽<br>
-      · 女卫生间（≤100人）：每 15 人设 1–2 个蹲位（本工具取推荐中值，系数 1.5；下限 ceil(W/15)，上限 2×ceil(W/15)）<br>
-      · 女卫生间（&gt;100人）：基础蹲位（100人时 7 个）+ 每增加 30 人增设 1 个蹲位<br>
-      · 男女比例校验：装卸车 1:0（至少 1 个女卫生间）；中端 1.38:1（仅供参考）
-    </div>
+  <div class="max-s-row">
+    <label>单间卫生间最大蹲位数：</label>
+    <input type="number" id="max_s" value="8" min="1" max="20">
+    <span class="hint">超过此数自动拆分为多间；蹲位&lt;此值的前/后端模块并入中端（逻辑1模式）</span>
   </div>
 </div>
 
-<script>
-function calc() {
-  const men = parseInt(document.getElementById('men').value) || 0;
-  const women = parseInt(document.getElementById('women').value) || 0;
-  const warn = document.getElementById('warn');
-  warn.style.display = 'none';
+<!-- 按钮 -->
+<div class="card">
+  <div class="btn-row">
+    <button class="btn btn-primary active" id="btn_logic1" onclick="calc('logic1')">
+      ✅ 适用逻辑1<br><span style="font-weight:400;font-size:.72rem">三个模块浮动差值均≤5%</span>
+    </button>
+    <button class="btn btn-secondary" id="btn_logic2" onclick="calc('logic2')">
+      📊 适用逻辑2<br><span style="font-weight:400;font-size:.72rem">三个模块浮动差值不全≤5%</span>
+    </button>
+  </div>
+  <div class="pct-note">💡 逻辑1：分前/中/后端模块计算，蹲位&lt;最大值的模块并入中端，节省建设成本。<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;逻辑2：仅输出男女总蹲位数，由中心实际情况划定建设方案。</div>
+</div>
 
-  if (men < 0 || women < 0) {
-    warn.textContent = '人数不能为负数，请重新输入。';
-    warn.style.display = 'block';
+<!-- 结果 -->
+<div id="result_area">
+  <div class="result-placeholder">👆 点击上方按钮计算结果</div>
+</div>
+
+<!-- 说明 -->
+<div class="card">
+  <div class="card-title">📖 计算规则说明</div>
+  <div style="font-size:.8rem;color:#4a6a8a;line-height:2">
+    <p><strong>男卫生间：</strong>≤100人固定 4蹲位+4尿槽；&gt;100人每多50人增设1蹲位+1尿槽</p>
+    <p><strong>女卫生间：</strong>≤100人每15人设1~2蹲位（推荐中值：ceil(3n/40)）；&gt;100人基础7蹲+每增加30人增设1蹲</p>
+    <p><strong>合并规则（逻辑1）：</strong>若前端/后端任一性别蹲位 &lt; 单间最大蹲位数，则取消该模块独立卫生间，并入中端合并建设</p>
+    <p><strong>卫生间个数：</strong>蹲位数超过单间最大值时，自动按每间≤最大值平均拆分</p>
+    <p><strong>如厕时间：</strong>女性≈男性×1.75倍（1.5~2倍区间）</p>
+    <p><strong>往返时间：</strong>≤60秒（不含如厕时间）</p>
+    <p><strong>位置建议：</strong>距中间工位≤50m；楼梯进出口位置；单层建筑靠近卫生间，多层一层设在员工通道20m以内非车行道</p>
+    <p><strong>吸烟室：</strong>按卫生间数量1/3酌情设置于卫生间附近</p>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ========== 核心计算逻辑（与Python版完全对齐） ==========
+function calMale(n) {
+  return n <= 100 ? 4 : 4 + Math.ceil((n - 100) / 50);
+}
+function calFemale(n) {
+  if (n <= 100) {
+    return [Math.ceil(3 * n / 40), Math.floor(n / 15), Math.floor(n * 2 / 15)];
+  } else {
+    const e = Math.ceil((n - 100) / 30);
+    return [7 + e, 7 + Math.max(0, Math.floor((n - 100) / 30)), 7 + Math.max(0, Math.ceil((n - 100) / 30))];
+  }
+}
+function numToilets(stalls, maxS) {
+  return Math.ceil(stalls / maxS);
+}
+function calcModule(name, m, f, maxS) {
+  const mr = calMale(m);
+  const [fr, fl, fh] = calFemale(f);
+  return {
+    name, m, mr, f, fr, fl, fh,
+    maleToilets: numToilets(mr, maxS),
+    femaleToilets: numToilets(fr, maxS),
+    maxS,
+  };
+}
+function splitInto3(prefix, totalM, totalF, maxS) {
+  const ratios = [0.20, 0.67, 0.13];
+  const zones = ['前端', '中端', '后端'];
+  return zones.map((z, i) => calcModule(
+    `${prefix}-${z}`, Math.round(totalM * ratios[i]), Math.round(totalF * ratios[i]), maxS
+  ));
+}
+function mergeSmall(modules, maxS) {
+  const [front, mid, back] = modules;
+  const feMerge = front.mr < maxS || front.fr < maxS;
+  const beMerge = back.mr < maxS || back.fr < maxS;
+  const result = [];
+  if (feMerge) {
+    result.push(calcModule(mid.name + '(含前端)', front.m + mid.m, front.f + mid.f, maxS));
+  } else {
+    result.push(front); result.push(mid);
+  }
+  if (beMerge) {
+    const last = result[result.length - 1];
+    if (last.name.endsWith('(含前端)')) {
+      result[result.length - 1] = calcModule(mid.name + '(含前/后端)', last.m + back.m, last.f + back.f, maxS);
+    } else {
+      result[result.length - 1] = calcModule(mid.name + '(含后端)', mid.m + back.m, mid.f + back.f, maxS);
+    }
+  } else {
+    result.push(back);
+  }
+  return result;
+}
+function solve(jinM, jinF, chuM, chuF, maxS, useLogic1) {
+  const totalM = jinM + chuM, totalF = jinF + chuF;
+  const mrTotal = calMale(totalM);
+  const [frTotal, flTotal, fhTotal] = calFemale(totalF);
+  const r = {
+    inputs: { jinM, jinF, chuM, chuF },
+    maxS, useLogic1,
+    total: {
+      maleSquat: mrTotal, maleUrinal: mrTotal,
+      femaleSquat: frTotal, femaleRange: [flTotal, fhTotal],
+    },
+    modules: [],
+    merged: [],
+  };
+  if (!useLogic1) return r;
+  const jMods = splitInto3('进港', jinM, jinF, maxS);
+  const cMods = splitInto3('出港', chuM, chuF, maxS);
+  r.modules = [...jMods, ...cMods];
+  r['进港_merged'] = mergeSmall(jMods, maxS);
+  r['出港_merged'] = mergeSmall(cMods, maxS);
+  r.merged = [...r['进港_merged'], ...r['出港_merged']];
+  return r;
+}
+
+// ========== 渲染 ==========
+function render(r) {
+  const area = document.getElementById('result_area');
+  const [fl, fh] = r.total.femaleRange;
+  const ms = r.maxS;
+  const maxToilets = Math.ceil(r.total.femaleSquat / ms);
+
+  let html = '';
+
+  // 顶部标签
+  html += `<div class="result-header">
+    <span class="result-tag ${r.useLogic1 ? 'tag-module' : 'tag-total'}">
+      ${r.useLogic1 ? '📐 逻辑1：分模块+合并' : '📊 逻辑2：仅总蹲位'}
+    </span>
+    <span style="font-size:.75rem;color:#8aaac8">参数：进港男${r.inputs.jinM} 进港女${r.inputs.jinF} 出港男${r.inputs.chuM} 出港女${r.inputs.chuF}</span>
+  </div>`;
+
+  // 统计卡片
+  html += `<div class="card" style="margin-bottom:12px">
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-label">👨 男蹲位</div>
+        <div class="stat-val">${r.total.maleSquat}<span>蹲</span></div>
+        <div class="stat-unit">+ ${r.total.maleUrinal} 尿槽（1:1配置）</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">👩 女蹲位</div>
+        <div class="stat-val">${r.total.femaleSquat}<span>蹲</span></div>
+        <div class="stat-unit">推荐范围 ${fl}-${fh} 蹲</div>
+      </div>
+    </div>`;
+
+  // 男女蹲位明细
+  html += `<div class="stall-grid">
+    <div class="stall-chip"><span class="label">男蹲位</span><span class="val">${r.total.maleSquat}</span><span class="urinal">+${r.total.maleUrinal}尿槽</span></div>
+    <div class="stall-chip"><span class="label">女蹲位</span><span class="val">${r.total.femaleSquat}</span><span class="urinal">范围${fl}-${fh}</span></div>
+    <div class="stall-chip"><span class="label">如厕时间</span><span class="val">男×1</span><span class="urinal">女×1.5~2倍</span></div>
+    <div class="stall-chip"><span class="label">往返时间</span><span class="val">≤60s</span><span class="urimal">不含如厕</span></div>
+  </div></div>`;
+
+  // 位置建议
+  html += `<div class="card" style="margin-bottom:12px">
+    <div class="card-title">📍 位置与配套设施建议</div>
+    <div class="position-box">
+      <strong>距离中间工位 ≤50m</strong>，楼梯进出口位置。<br>
+      • 单层建筑：设靠近卫生间<br>
+      • 多层建筑：一层设在员工进出通道 <strong>20m以内</strong> 非车辆行驶道路；上层设楼梯口附近<br>
+      • 综合吸烟室：按卫生间数量（约${maxToilets}间）的 <strong>1/3</strong> 酌情设置于卫生间附近
+    </div>
+  </div>`;
+
+  // 分模块（逻辑1）
+  if (r.useLogic1 && r.merged.length > 0) {
+    html += `<div class="card">
+      <div class="card-title">🔧 男女蹲位比例配置（分库分模块）</div>
+      <p style="font-size:.75rem;color:#8aaac8;margin-bottom:10px">
+        💡 蹲位&lt;${ms}蹲的模块已并入中端合并建设；蹲位&gt;${ms}蹲时自动拆分为多间。
+      </p>`;
+
+    for (const [libKey, libLabel] of [['进港_merged','🚢 进港库'],['出港_merged','🚚 出港库']]) {
+      const mods = r[libKey];
+      if (!mods) continue;
+      html += `<div style="margin-bottom:14px">
+        <div style="font-weight:700;color:#1a3a5c;font-size:.85rem;margin-bottom:6px">${libLabel}</div>
+        <table class="module-table">
+          <thead>
+            <tr>
+              <th>模块</th><th>男人数</th><th>男蹲位(间数)</th><th>女人数</th><th>女蹲位(间数)</th>
+            </tr>
+          </thead>
+          <tbody>`;
+      for (const m of mods) {
+        const merged = m.name.includes('合并');
+        html += `<tr class="${merged ? 'merged' : ''}">
+          <td class="zone-name">${m.name}${merged ? ' ✓' : ''}</td>
+          <td class="m-num">${m.m}人</td>
+          <td class="m-stall">${m.mr}蹲${m.maleToilets > 1 ? ` (${m.maleToilets}间)` : ''}</td>
+          <td class="f-num">${m.f}人</td>
+          <td class="f-stall">${m.fr}蹲${m.femaleToilets > 1 ? ` (${m.femaleToilets}间)` : ''}</td>
+        </tr>`;
+      }
+      html += `</tbody></table></div>`;
+    }
+    html += `</div>`;
+  }
+
+  // 备注
+  html += `<div class="card notes">
+    <strong>注意事项：</strong>本计算结果为参考值，实际蹲位数应在推荐范围内由中心根据现场条件确定。
+    女性如厕时间约为男性1.5~2倍，建议女厕适当增加蹲位比例。
+  </div>`;
+
+  area.innerHTML = html;
+}
+
+// ========== 入口 ==========
+function calc(mode) {
+  const jm = parseInt(document.getElementById('jin_m').value) || 0;
+  const jf = parseInt(document.getElementById('jin_f').value) || 0;
+  const cm = parseInt(document.getElementById('chu_m').value) || 0;
+  const cf = parseInt(document.getElementById('chu_f').value) || 0;
+  const ms = parseInt(document.getElementById('max_s').value) || 8;
+
+  if (jm < 0 || jf < 0 || cm < 0 || cf < 0) {
+    document.getElementById('result_area').innerHTML =
+      '<div class="result-placeholder" style="color:#e55">⚠️ 人数不能为负数</div>';
     return;
   }
 
-  // ---- 男卫生间 ----
-  // ≤100 人固定 4 蹲位 + 4 尿槽；>100 人每多 50 人 +1 蹲位 +1 尿槽
-  let maleExtra;
-  if (men <= 100) {
-    maleExtra = 0;
-  } else {
-    maleExtra = Math.floor((men - 100) / 50);
-  }
-  const maleSquat = 4 + maleExtra;
-  const maleUrinal = 4 + maleExtra;
+  const useLogic1 = (mode === 'logic1');
+  document.getElementById('btn_logic1').classList.toggle('active', useLogic1);
+  document.getElementById('btn_logic2').classList.toggle('active', !useLogic1);
 
-  // ---- 女卫生间 ----
-  let femaleSquat, femaleNote;
-  if (women <= 100) {
-    const base = Math.ceil(women / 15);
-    const low = base;
-    const high = base * 2;
-    femaleSquat = Math.round(base * 1.5); // 推荐中值
-    femaleNote = `每15人1–2个，范围 ${low}–${high}，推荐 ${femaleSquat}`;
-  } else {
-    const base = Math.ceil(100 / 15); // = 7
-    const extra = Math.floor((women - 100) / 30);
-    femaleSquat = base + extra;
-    femaleNote = `基础7 + 每增30人1个（增${extra}）= ${femaleSquat}`;
-  }
-
-  // ---- 比例 ----
-  const squatRatio = `${maleSquat} : ${femaleSquat}`;
-  const urinalRatio = `${maleUrinal} : ${maleSquat}`;
-  const urinalPct = ((maleUrinal / (maleSquat + maleUrinal)) * 100).toFixed(1) + '%';
-
-  // ---- 校验 ----
-  let warns = [];
-  if (women > 0 && femaleSquat < 1) warns.push('女职工存在但女卫生间蹲位不足，至少应设 1 个女卫生间。');
-  if (women === 0) warns.push('当前无女职工：按装卸车比例 1:0，至少保留 1 个女卫生间备用。');
-  if (warns.length > 0) {
-    warn.innerHTML = '⚠ ' + warns.join('<br>⚠ ');
-    warn.style.display = 'block';
-  }
-
-  // ---- 输出 ----
-  document.getElementById('r-male').textContent = `${maleSquat} 蹲位 + ${maleUrinal} 尿槽`;
-  document.getElementById('r-female').textContent = `${femaleSquat} 蹲位（${femaleNote}）`;
-  document.getElementById('r-male-squat').textContent = maleSquat + ' 个';
-  document.getElementById('r-female-squat').textContent = femaleSquat + ' 个';
-  document.getElementById('r-squat-ratio').textContent = squatRatio;
-  document.getElementById('r-urinal').textContent = maleUrinal + ' 个';
-  document.getElementById('r-urinal-ratio').textContent = urinalRatio;
-  document.getElementById('r-urinal-pct').textContent = urinalPct;
-
-  document.getElementById('result').style.display = 'block';
+  const r = solve(jm, jf, cm, cf, ms, useLogic1);
+  render(r);
 }
 
-function resetForm() {
-  document.getElementById('men').value = '';
-  document.getElementById('women').value = '';
-  document.getElementById('result').style.display = 'none';
-  document.getElementById('warn').style.display = 'none';
-}
+// 回车快捷计算
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') calc(document.getElementById('btn_logic1').classList.contains('active') ? 'logic1' : 'logic2');
+});
 </script>
 </body>
 </html>
