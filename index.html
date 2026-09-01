@@ -84,6 +84,23 @@ h1{text-align:center;font-size:1.5rem;color:#1a3a5c;margin-bottom:6px}
 .notes{font-size:.78rem;color:#6a8aaa;margin-top:16px;line-height:1.8;
        padding:12px 16px;background:#f6fafd;border-radius:8px}
 
+/* 配置建议 */
+.rec-section{margin-top:14px}
+.rec-gender{margin-bottom:14px}
+.rec-gender-title{font-size:.82rem;font-weight:700;margin-bottom:8px;
+                  display:flex;align-items:center;gap:6px}
+.rec-item{background:#f8fbff;border:1px solid #dce8f4;border-radius:8px;
+          padding:10px 14px;margin-bottom:8px;font-size:.82rem;line-height:1.8;color:#1a3a5c}
+.rec-item.merge{background:#f0faf4;border-color:#b8e4c8}
+.rec-item .badge{display:inline-block;padding:1px 8px;border-radius:10px;
+                 font-size:.7rem;font-weight:700}
+.badge-merge{background:#1a7a3a;color:#fff}
+.badge-alone{background:#1a5fa8;color:#fff}
+.rec-modules{color:#4a6a8a;font-size:.78rem;margin-top:2px}
+.rec-summary{font-weight:700;color:#1a3a5c}
+.rec-summary span{color:#1a7a3a}
+.rec-total{font-size:.75rem;color:#8aaac8;margin-top:4px}
+
 /* 按钮激活态 */
 .btn.active{box-shadow:0 0 0 3px rgba(26,95,168,.2)}
 
@@ -209,28 +226,100 @@ function splitInto3(prefix, totalM, totalF, maxS) {
     `${prefix}-${z}`, Math.round(totalM * ratios[i]), Math.round(totalF * ratios[i]), maxS
   ));
 }
-function mergeSmall(modules, maxS) {
+
+function mergeByGender(modules, maxS) {
   const [front, mid, back] = modules;
-  const feMerge = front.mr < maxS || front.fr < maxS;
-  const beMerge = back.mr < maxS || back.fr < maxS;
-  const result = [];
-  if (feMerge) {
-    result.push(calcModule(mid.name + '(含前端)', front.m + mid.m, front.f + mid.f, maxS));
-  } else {
-    result.push(front); result.push(mid);
-  }
-  if (beMerge) {
-    const last = result[result.length - 1];
-    if (last.name.endsWith('(含前端)')) {
-      result[result.length - 1] = calcModule(mid.name + '(含前/后端)', last.m + back.m, last.f + back.f, maxS);
+  const byGender = {};
+  for (const gender of ['male', 'female']) {
+    const fStalls = gender === 'male' ? front.mr : front.fr;
+    const mStalls = gender === 'male' ? mid.mr : mid.fr;
+    const bStalls = gender === 'male' ? back.mr : back.fr;
+    const fPeople = gender === 'male' ? front.m : front.f;
+    const mPeople = gender === 'male' ? mid.m : mid.f;
+    const bPeople = gender === 'male' ? back.m : back.f;
+
+    const fMerge = fStalls < maxS;  // 前端该性别蹲位 < maxS → 并入中端
+    const bMerge = bStalls < maxS;  // 后端该性别蹲位 < maxS → 并入中端
+
+    let results = [];
+    if (fMerge) {
+      // 前端并入中端（不再作为独立模块）
+      const mergedPeople = fPeople + mPeople;
+      const mergedStalls = calMale(mergedPeople) if gender === 'male'
+                           ? calMale(mergedPeople) : calFemale(mergedPeople)[0];
+      const mergedRooms = numToilets(mergedStalls, maxS);
+      results.push({
+        name: mid.name.replace(/^.+-/, ''),   // "中端"
+        mergedFrom: ['前端', '中端'],
+        people: mergedPeople,
+        stalls: mergedStalls,
+        rooms: mergedRooms,
+        isMerged: true,
+      });
     } else {
-      result[result.length - 1] = calcModule(mid.name + '(含后端)', mid.m + back.m, mid.f + back.f, maxS);
+      // 前端独立
+      const rooms = numToilets(fStalls, maxS);
+      results.push({
+        name: front.name.replace(/^.+-/, ''),
+        mergedFrom: ['前端'],
+        people: fPeople, stalls: fStalls, rooms,
+        isMerged: false,
+      });
+      // 中端独立（若前端已合并则不再重复输出）
+      const mRooms = numToilets(mStalls, maxS);
+      results.push({
+        name: mid.name.replace(/^.+-/, ''),
+        mergedFrom: ['中端'],
+        people: mPeople, stalls: mStalls, rooms: mRooms,
+        isMerged: false,
+      });
     }
-  } else {
-    result.push(back);
+
+    // 后端
+    if (bMerge) {
+      // 追加到已有结果（前端已合并→追加到中端；前端独立→新建中+后合并）
+      const last = results[results.length - 1];
+      if (last.isMerged) {
+        // 追加后端到已合并的中端
+        const newPeople = last.people + bPeople;
+        const newStalls = gender === 'male'
+          ? calMale(newPeople) : calFemale(newPeople)[0];
+        results[results.length - 1] = {
+          name: mid.name.replace(/^.+-/, ''),
+          mergedFrom: ['前端', '中端', '后端'],
+          people: newPeople, stalls: newStalls,
+          rooms: numToilets(newStalls, maxS),
+          isMerged: true,
+        };
+      } else {
+        // 前/中独立，后合并进中端
+        const lastM = results.find(x => x.name === mid.name.replace(/^.+-/, ''));
+        if (lastM) {
+          const newPeople = lastM.people + bPeople;
+          const newStalls = gender === 'male'
+            ? calMale(newPeople) : calFemale(newPeople)[0];
+          lastM.people = newPeople;
+          lastM.stalls = newStalls;
+          lastM.rooms = numToilets(newStalls, maxS);
+          lastM.isMerged = true;
+          lastM.mergedFrom = ['中端', '后端'];
+        }
+      }
+    } else {
+      // 后端独立
+      const bRooms = numToilets(bStalls, maxS);
+      results.push({
+        name: back.name.replace(/^.+-/, ''),
+        mergedFrom: ['后端'],
+        people: bPeople, stalls: bStalls, rooms: bRooms,
+        isMerged: false,
+      });
+    }
+    byGender[gender] = results;
   }
-  return result;
+  return byGender;
 }
+
 function solve(jinM, jinF, chuM, chuF, maxS, useLogic1) {
   const totalM = jinM + chuM, totalF = jinF + chuF;
   const mrTotal = calMale(totalM);
@@ -249,9 +338,9 @@ function solve(jinM, jinF, chuM, chuF, maxS, useLogic1) {
   const jMods = splitInto3('进港', jinM, jinF, maxS);
   const cMods = splitInto3('出港', chuM, chuF, maxS);
   r.modules = [...jMods, ...cMods];
-  r['进港_merged'] = mergeSmall(jMods, maxS);
-  r['出港_merged'] = mergeSmall(cMods, maxS);
-  r.merged = [...r['进港_merged'], ...r['出港_merged']];
+  r['进港_merged'] = mergeByGender(jMods, maxS);
+  r['出港_merged'] = mergeByGender(cMods, maxS);
+  r.merged = r.modules;  // 保留原始模块供他用
   return r;
 }
 
@@ -306,39 +395,75 @@ function render(r) {
     </div>
   </div>`;
 
-  // 分模块（逻辑1）
-  if (r.useLogic1 && r.merged.length > 0) {
-    html += `<div class="card">
-      <div class="card-title">🔧 男女蹲位比例配置（分库分模块）</div>
-      <p style="font-size:.75rem;color:#8aaac8;margin-bottom:10px">
-        💡 蹲位&lt;${ms}蹲的模块已并入中端合并建设；蹲位&gt;${ms}蹲时自动拆分为多间。
-      </p>`;
+  // ========== 配置建议（人话版）==========
+  if (r.useLogic1) {
+    const libConfig = [
+      { key: '进港_merged', label: '🚢 进港库' },
+      { key: '出港_merged', label: '🚚 出港库' },
+    ];
+    let recHtml = `<div class="card">
+      <div class="card-title">📋 卫生间配置建议</div>`;
 
-    for (const [libKey, libLabel] of [['进港_merged','🚢 进港库'],['出港_merged','🚚 出港库']]) {
-      const mods = r[libKey];
-      if (!mods) continue;
-      html += `<div style="margin-bottom:14px">
-        <div style="font-weight:700;color:#1a3a5c;font-size:.85rem;margin-bottom:6px">${libLabel}</div>
-        <table class="module-table">
-          <thead>
-            <tr>
-              <th>模块</th><th>男人数</th><th>男蹲位(间数)</th><th>女人数</th><th>女蹲位(间数)</th>
-            </tr>
-          </thead>
-          <tbody>`;
-      for (const m of mods) {
-        const merged = m.name.includes('合并');
-        html += `<tr class="${merged ? 'merged' : ''}">
-          <td class="zone-name">${m.name}${merged ? ' ✓' : ''}</td>
-          <td class="m-num">${m.m}人</td>
-          <td class="m-stall">${m.mr}蹲${m.maleToilets > 1 ? ` (${m.maleToilets}间)` : ''}</td>
-          <td class="f-num">${m.f}人</td>
-          <td class="f-stall">${m.fr}蹲${m.femaleToilets > 1 ? ` (${m.femaleToilets}间)` : ''}</td>
-        </tr>`;
+    // 汇总总间数
+    let totalMaleRooms = 0, totalFemaleRooms = 0;
+    for (const { key } of libConfig) {
+      const byG = r[key];
+      if (!byG) continue;
+      for (const g of ['male', 'female']) {
+        for (const item of (byG[g] || [])) {
+          if (g === 'male') totalMaleRooms += item.rooms;
+          else totalFemaleRooms += item.rooms;
+        }
       }
-      html += `</tbody></table></div>`;
     }
-    html += `</div>`;
+
+    for (const { key, label } of libConfig) {
+      const byG = r[key];
+      if (!byG) continue;
+
+      for (const [gKey, gTitle] of [['male','👨 男卫生间'],['female','👩 女卫生间']]) {
+        const items = byG[gKey] || [];
+        if (items.length === 0) continue;
+
+        let genderHtml = '';
+        for (const item of items) {
+          const merged = item.isMerged;
+          const cls = merged ? 'rec-item merge' : 'rec-item';
+          const badge = merged
+            ? '<span class="badge badge-merge">合并</span>'
+            : '<span class="badge badge-alone">独立</span>';
+          // 每间蹲位（尽量均分）
+          const base = Math.floor(item.stalls / item.rooms);
+          const rem = item.stalls % item.rooms;
+          const per = rem > 0 ? `${base}+1` : String(base);
+          const roomStr = item.rooms === 1 ? '1间' : item.rooms + '间';
+          const stallStr = item.rooms === 1 ? `每间${per}蹲位` : `每间约${per}蹲位`;
+
+          if (merged) {
+            const allThree = item.mergedFrom.length === 3;
+            const zones = allThree ? '全区域' : item.mergedFrom.join('+');
+            genderHtml += `<div class="${cls}">${badge} 建议${zones}合并建设（${item.people}人），${roomStr}，${stallStr}</div>`;
+          } else {
+            genderHtml += `<div class="${cls}">${badge} ${item.name}独立建设（${item.people}人），${roomStr}，${stallStr}</div>`;
+          }
+        }
+
+        recHtml += `<div class="rec-gender">
+          <div class="rec-gender-title">${gTitle}</div>
+          ${genderHtml}
+        </div>`;
+      }
+    }
+
+    recHtml += `<div style="margin-top:10px;padding:10px 14px;background:#f0f4ff;
+                 border-radius:8px;font-size:.78rem;color:#1a3a5c;line-height:2">
+      <strong>🏗️ 全中心汇总：</strong>
+      建议建设<strong>男卫生间 ${totalMaleRooms} 间</strong>（合计${r.total.maleSquat}蹲位+${r.total.maleUrinal}尿槽，1:1配置），
+      <strong>女卫生间 ${totalFemaleRooms} 间</strong>（合计${r.total.femaleSquat}蹲位，范围${fl}~${fh}蹲）。<br>
+      <strong>📐 如厕参考：</strong>男性如厕1次；女性约<span style="color:#1a7a3a">1.5~2倍</span>；往返距离≤50m，往返时间≤60s（均不含如厕时间）。
+    </div></div>`;
+
+    html += recHtml;
   }
 
   // 备注
